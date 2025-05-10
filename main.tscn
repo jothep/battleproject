@@ -1,0 +1,73 @@
+[gd_scene load_steps=3 format=3 uid="uid://c4tnmwgt6qhl8"]
+
+[ext_resource type="Theme" uid="uid://ploq5j8qqe5a" path="res://GlobalTheme.tres" id="1_0xm2m"]
+[ext_resource type="Script" uid="uid://efrt5jp5c6h2" path="res://battle/battle_manager.gd" id="1_ig7tw"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme = ExtResource("1_0xm2m")
+
+[node name="MessageLabel" type="Label" parent="Control"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 200.0
+offset_right = 144.0
+offset_bottom = 224.0
+text = "战斗開始！"
+
+[node name="P1Label" type="Label" parent="Control"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 144.0
+offset_bottom = 100.0
+text = "玩家 HP: 100
+"
+
+[node name="P2Label" type="Label" parent="Control"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 80.0
+offset_right = 144.0
+offset_bottom = 104.0
+text = "敌人 HP: 100"
+
+[node name="AttackButton" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 130.0
+offset_right = 90.0
+offset_bottom = 161.0
+text = "†東亞重工 攻击！"
+
+[node name="BattleManager" type="Node" parent="Control"]
+script = ExtResource("1_ig7tw")
+
+[node name="P1InfoLabel" type="Label" parent="Control"]
+layout_mode = 0
+offset_left = 650.0
+offset_top = 80.0
+offset_right = 798.0
+offset_bottom = 117.0
+text = "HeroInfo"
+
+[node name="P2InfoLabel" type="Label" parent="Control"]
+layout_mode = 0
+offset_left = 900.0
+offset_top = 80.0
+offset_right = 1084.0
+offset_bottom = 117.0
+text = "EnemyInfo"
+
+[node name="RestartButton" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 386.0
+offset_top = 128.0
+offset_right = 476.0
+offset_bottom = 188.0
+text = "重開"

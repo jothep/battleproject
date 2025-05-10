@@ -1,0 +1,7 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://ploq5j8qqe5a"]
+
+[ext_resource type="FontFile" uid="uid://do33ti75vwqkb" path="res://TOA_Heavy_Industries.ttf" id="1_hxewf"]
+
+[resource]
+default_font = ExtResource("1_hxewf")
+default_font_size = 36
