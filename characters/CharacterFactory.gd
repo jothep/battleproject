@@ -32,6 +32,6 @@ static func create_p1() -> Character:
 static func create_p2() -> Character:
 	var c = Character.new()
 	c.char_name = "p2"
-	c.attributes = build_attributes("B", "B", "C+", "B+", "B++", "B")
+	c.attributes = build_attributes("A-", "B", "C+", "B", "B++", "B")
 	c.calculate_combat_stats()
 	return c
