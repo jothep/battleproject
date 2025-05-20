@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://c4tnmwgt6qhl8"]
+[gd_scene load_steps=4 format=3 uid="uid://c4tnmwgt6qhl8"]
 
 [ext_resource type="Theme" uid="uid://ploq5j8qqe5a" path="res://GlobalTheme.tres" id="1_0xm2m"]
-[ext_resource type="Script" uid="uid://efrt5jp5c6h2" path="res://battle/battle_manager.gd" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://efrt5jp5c6h2" path="res://combat/BattleManager.gd" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://bhfl3lgr2u2gw" path="res://ui/BattleUI.gd" id="2_h2yge"]
 
 [node name="Node2D" type="Node2D"]
 
@@ -11,13 +12,14 @@ anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 theme = ExtResource("1_0xm2m")
+script = ExtResource("2_h2yge")
 
 [node name="MessageLabel" type="Label" parent="Control"]
 layout_mode = 0
-offset_left = 50.0
-offset_top = 200.0
-offset_right = 144.0
-offset_bottom = 224.0
+offset_left = 48.0
+offset_top = 345.0
+offset_right = 228.0
+offset_bottom = 397.0
 text = "战斗開始！"
 
 [node name="P1Label" type="Label" parent="Control"]
@@ -26,7 +28,7 @@ offset_left = 50.0
 offset_top = 50.0
 offset_right = 144.0
 offset_bottom = 100.0
-text = "玩家 HP: 100
+text = "P1 HP: 100
 "
 
 [node name="P2Label" type="Label" parent="Control"]
@@ -35,7 +37,7 @@ offset_left = 50.0
 offset_top = 80.0
 offset_right = 144.0
 offset_bottom = 104.0
-text = "敌人 HP: 100"
+text = "P2 HP: 100"
 
 [node name="AttackButton" type="Button" parent="Control"]
 layout_mode = 0
@@ -54,7 +56,7 @@ offset_left = 650.0
 offset_top = 80.0
 offset_right = 798.0
 offset_bottom = 117.0
-text = "HeroInfo"
+text = "P1 Info"
 
 [node name="P2InfoLabel" type="Label" parent="Control"]
 layout_mode = 0
@@ -62,12 +64,46 @@ offset_left = 900.0
 offset_top = 80.0
 offset_right = 1084.0
 offset_bottom = 117.0
-text = "EnemyInfo"
+text = "P2 Info"
 
 [node name="RestartButton" type="Button" parent="Control"]
 layout_mode = 0
-offset_left = 386.0
-offset_top = 128.0
-offset_right = 476.0
-offset_bottom = 188.0
+offset_left = 389.0
+offset_top = 132.0
+offset_right = 479.0
+offset_bottom = 192.0
 text = "重開"
+
+[node name="Skill1Button" type="Button" parent="Control"]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 47.0
+offset_top = 209.0
+offset_right = 182.0
+offset_bottom = 258.0
+text = "Skill1"
+
+[node name="Skill2Button" type="Button" parent="Control"]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 202.0
+offset_top = 208.0
+offset_right = 329.0
+offset_bottom = 258.0
+text = "Skill2"
+
+[node name="Skill3Button" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 357.0
+offset_top = 210.0
+offset_right = 478.0
+offset_bottom = 258.0
+text = "Skill3"
+
+[node name="NobleButton" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 49.0
+offset_top = 275.0
+offset_right = 480.0
+offset_bottom = 320.0
+text = "宝具"
