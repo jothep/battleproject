@@ -46,7 +46,10 @@ var _endurance := 0
 var _mana := 0
 var _noble := 0
 
+var rng := RandomNumberGenerator.new()
+
 func initialize():
+	rng.randomize()
 	_strength = get_value_from_rank(strength_rank)
 	_agility = get_value_from_rank(agility_rank)
 	_luck = get_value_from_rank(luck_rank)
@@ -56,7 +59,7 @@ func initialize():
 	
 func get_value_from_rank(rank: String) -> int:
 	var value_range = ATTRIBUTE_RANKS.get(rank, [1, 1])
-	return randi_range(value_range[0], value_range[1])
+	return rng.randi_range(value_range[0], value_range[1])
 
 func get_strength(): return _strength
 func get_agility(): return _agility

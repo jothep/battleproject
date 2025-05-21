@@ -1,8 +1,13 @@
 class_name ActionOrderResolver
 
+
+
 static func determine_order(p1: Character, p2: Character) -> String:
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	
 	# 10% 概率触发相打
-	if randf() < 0.1:
+	if rng.randf() < 0.1:
 		return "simultaneous"
 
 	var agi1 = p1.attributes.get_agility()
@@ -11,11 +16,8 @@ static func determine_order(p1: Character, p2: Character) -> String:
 
 	# 避免除0
 	if total == 0:
-		if randf() < 0.5:
-			return "p1_first"
-		else:
-			return "p2_first"
+		return "p1_first" if rng.randf() < 0.5 else "p2_first"
 
-	# 权重随机
-	var roll = randi() % total
+	# 敏捷比例决定先后手
+	var roll = rng.randi_range(0, total - 1)
 	return "p1_first" if roll < agi1 else "p2_first"

@@ -17,7 +17,6 @@ var p1_action: String
 var p2_action: String
 
 func _ready():
-	
 	p1 = CharacterFactory.create_p1()
 	p2 = CharacterFactory.create_p2()
 	p1.reset_for_battle()
@@ -63,7 +62,7 @@ func start_auto_battle():
 	
 func on_player_skill_selected(skill_id: String):
 	p1_action = skill_id
-	msg = "P1 选择了技能：" + skill_id
+	msg = ""
 	# ✅ 提前更新冷却字典（不影响执行逻辑）
 	if skill_id.begins_with("skill_") and p1.cooldown[skill_id] == 0:
 		p1.cooldown[skill_id] = p1.get_skill_cooldown(skill_id)
@@ -77,73 +76,88 @@ func on_player_skill_selected(skill_id: String):
 
 func on_p2_action():
 	p2_action = p2.get_random_available_skill()
-	msg += "P2 选择了:" + p2_action
-	ui.show_message(msg)
 	
 func start_next_turn():
 	msg = ""
 	p1.prepare_for_turn()
 	p2.prepare_for_turn()
 	on_p2_action()
-	# --- 相打机制 ---
-	if randf() < 0.1:
-		handle_clash(p1, p2, p1_action, p2_action)
-		winner = check_defeat()
-		if winner != "":
-			end_battle(winner, msg)
-		return
-		
-	var agi1 = p1.attributes.get_agility()
-	var agi2 = p2.attributes.get_agility()
-	var roll = randi() % agi1 + agi2
-
-	if roll < agi1:
-		msg += execute_skill(p1, p2, p1_action)
-		winner = check_defeat()
-		if winner != "":
-			end_battle(winner, msg)
+	
+	var order = ActionOrderResolver.determine_order(p1, p2)
+	
+	match order:
+		"simultaneous":
+			msg += handle_clash(p1, p2, p1_action, p2_action)
+			update_ui()
+			winner = check_defeat()
+			if winner != "":
+				end_battle(winner, msg)
+			else:
+				ui.show_message(msg)
+				ui.wait_for_input(p1)
 			return
-		msg += execute_skill(p2, p1, p2_action)
-	else:
-		msg += execute_skill(p2, p1, p2_action)
-		winner = check_defeat()
-		if winner != "":
-			end_battle(winner, msg)
+
+		"p1_first":
+			msg += "p1 first!\n"
+			msg += execute_skill(p1, p2, p1_action)
+			update_ui()
+			winner = check_defeat()
+			if winner != "":
+				end_battle(winner, msg)
+				return
+			
+			msg += execute_skill(p2, p1, p2_action)
+			update_ui()
+			winner = check_defeat()
+			if winner != "":
+				end_battle(winner, msg)
+			else:
+				ui.show_message(msg)
+				ui.wait_for_input(p1)
 			return
-		msg += execute_skill(p1, p2, p1_action)
 
-	winner = check_defeat()
-	if winner != "":
-		end_battle(winner, msg)
-		return
-
-	ui.show_message(msg)
-	update_ui()
-	ui.wait_for_input(p1)
-
+		"p2_first":
+			msg += "p2 first!\n"
+			msg += execute_skill(p2, p1, p2_action)
+			update_ui()
+			winner = check_defeat()
+			if winner != "":
+				end_battle(winner, msg)
+				return
+				
+			msg += execute_skill(p1, p2, p1_action)
+			update_ui()
+			winner = check_defeat()
+			if winner != "":
+				end_battle(winner, msg)
+			else:
+				ui.show_message(msg)
+				ui.wait_for_input(p1)
+			return
 		
-
-func handle_clash(attacker_p1: Character, attacker_p2: Character, skill1: String, skill2: String):
+func handle_clash(attacker_p1: Character, attacker_p2: Character, skill1: String, skill2: String) -> String:
 	var clash_msg := "⚡ 相打触发！双方同时行动\n"
 
 	var r1 = execute_skill(attacker_p1, attacker_p2, skill1)
+	clash_msg += r1 + "\n"
+	
 	winner = check_defeat()
 	if winner != "":
-		msg += r1
-		end_battle(winner, msg)
-		return
+		clash_msg += r1
+		end_battle(winner, clash_msg)
+		return clash_msg
 	
 	var r2 = execute_skill(attacker_p2, attacker_p1, skill2)
+	clash_msg += r2
+	
 	winner = check_defeat()
 	if winner != "":
-		msg += r1
 		end_battle(winner, msg)
-		return
+	else:
+		ui.show_message(clash_msg)
+		ui.wait_for_input(attacker_p1)
 
-	clash_msg += r1 + r2
-
-	winner = check_defeat()
-	end_battle(winner, clash_msg)
+	return clash_msg
 
 func update_ui():
 	update_hp_labels()
@@ -213,13 +227,13 @@ func calculate_damage(user: Character, _target: Character, skill_id: String, hit
 		"attack":
 			skill_multiplier = 1.0
 		"skill_1":
-			skill_multiplier = 2.0
+			skill_multiplier = 1.2
 		"skill_2":
-			skill_multiplier = 3.0
+			skill_multiplier = 1.5
 		"skill_3":
-			skill_multiplier = 4.0
+			skill_multiplier = 1.7
 		"noble":
-			skill_multiplier = 10.0
+			skill_multiplier = 3.0
 		_:
 			skill_multiplier = 1.0
 
@@ -231,7 +245,7 @@ func calculate_damage(user: Character, _target: Character, skill_id: String, hit
 		"normal":
 			hit_multiplier = 1.0
 		"critical":
-			hit_multiplier = 1.75
+			hit_multiplier = 1.5
 		_:
 			hit_multiplier = 1.0
 

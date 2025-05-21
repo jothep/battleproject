@@ -16,6 +16,11 @@ var cooldown = {
 }
 const SKILL_BASE_COOLDOWN = {"skill_1": 2, "skill_2": 3, "skill_3": 4, "noble": 5}
 
+var rng := RandomNumberGenerator.new()
+
+func initialize():
+	rng.randomize()
+
 func calculate_combat_stats():
 	max_hp = attributes.get_endurance() * 10
 	atk = round(attributes.get_strength() * 2 + randf_range(0, attributes.get_luck() * 0.5))
@@ -37,8 +42,25 @@ func reset_for_battle():
 		cooldown[skill_id] = 0
 
 func get_random_available_skill() -> String:
-	var skill_list = ["attack", "skill_1", "skill_2", "skill_3", "noble"]
-	return skill_list[randi() % skill_list.size()]
+	var available_skills = []
+
+	# 攻击永远可用
+	available_skills.append("attack")
+
+	# 只有冷却为0的技能才可选
+	for skill_id in ["skill_1", "skill_2", "skill_3"]:
+		if cooldown.get(skill_id, 0) <= 0:
+			available_skills.append(skill_id)
+
+	# 宝具：冷却为0 且 能量达到3
+	if cooldown.get("noble", 0) <= 0 and noble_resource >= 3:
+		available_skills.append("noble")
+
+	# 使用随机数生成器安全获取技能
+	if available_skills.size() > 0:
+		return available_skills[rng.randi_range(0, available_skills.size() - 1)]
+	else:
+		return "attack"
 
 func prepare_for_turn():
 	# 技能冷却减少
