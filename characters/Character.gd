@@ -14,7 +14,8 @@ var cooldown = {
 	"skill_3": 0,
 	"noble": 0,
 }
-const SKILL_BASE_COOLDOWN = {"skill_1": 2, "skill_2": 3, "skill_3": 4, "noble": 5}
+const SKILL_BASE_COOLDOWN = {"skill_1": 2, "skill_2": 3, "skill_3": 4, "noble": 0}
+const NOBLE_REQUIRED_RESOURCE = 5
 
 var rng := RandomNumberGenerator.new()
 
@@ -52,8 +53,8 @@ func get_random_available_skill() -> String:
 		if cooldown.get(skill_id, 0) <= 0:
 			available_skills.append(skill_id)
 
-	# 宝具：冷却为0 且 能量达到3
-	if cooldown.get("noble", 0) <= 0 and noble_resource >= 3:
+	# 宝具：冷却为0 且 能量达到5
+	if cooldown.get("noble", 0) <= 0 and noble_resource >= 5:
 		available_skills.append("noble")
 
 	# 使用随机数生成器安全获取技能
@@ -63,16 +64,11 @@ func get_random_available_skill() -> String:
 		return "attack"
 
 func prepare_for_turn():
-	# 技能冷却减少
 	for skill_id in cooldown:
 		if cooldown[skill_id] > 0:
 			cooldown[skill_id] -= 1
-
-	if noble_resource < 3:
+	if noble_resource < NOBLE_REQUIRED_RESOURCE:
 		noble_resource += 1
-
-	# 打印调试信息
-	#print("→ %s 进入新回合：冷却状态 %s，宝具资源 %d" % [char_name, str(cooldown), noble_resource])
 
 func get_skill_cooldown(skill_id: String) -> int:
 	if skill_id == "attack":

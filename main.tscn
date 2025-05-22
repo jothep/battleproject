@@ -79,25 +79,28 @@ layout_mode = 1
 anchors_preset = -1
 offset_left = 47.0
 offset_top = 209.0
-offset_right = 182.0
-offset_bottom = 258.0
+offset_right = 186.0
+offset_bottom = 261.0
+theme_override_font_sizes/font_size = 20
 text = "Skill1"
 
 [node name="Skill2Button" type="Button" parent="Control"]
 layout_mode = 1
 anchors_preset = -1
-offset_left = 202.0
-offset_top = 208.0
-offset_right = 329.0
-offset_bottom = 258.0
+offset_left = 192.0
+offset_top = 210.0
+offset_right = 331.0
+offset_bottom = 262.0
+theme_override_font_sizes/font_size = 20
 text = "Skill2"
 
 [node name="Skill3Button" type="Button" parent="Control"]
 layout_mode = 0
-offset_left = 357.0
+offset_left = 337.0
 offset_top = 210.0
-offset_right = 478.0
-offset_bottom = 258.0
+offset_right = 476.0
+offset_bottom = 262.0
+theme_override_font_sizes/font_size = 20
 text = "Skill3"
 
 [node name="NobleButton" type="Button" parent="Control"]

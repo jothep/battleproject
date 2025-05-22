@@ -16,6 +16,8 @@ var turn_count := 0
 var p1_action: String 
 var p2_action: String
 
+const NOBLE_REQUIRED_RESOURCE = 5
+
 func _ready():
 	p1 = CharacterFactory.create_p1()
 	p2 = CharacterFactory.create_p2()
@@ -62,16 +64,14 @@ func start_auto_battle():
 	
 func on_player_skill_selected(skill_id: String):
 	p1_action = skill_id
-	msg = ""
-	# ✅ 提前更新冷却字典（不影响执行逻辑）
+	
 	if skill_id.begins_with("skill_") and p1.cooldown[skill_id] == 0:
-		p1.cooldown[skill_id] = p1.get_skill_cooldown(skill_id)
-	elif skill_id == "noble" and p1.noble_resource >= 3:
-		p1.cooldown["noble"] = p1.get_skill_cooldown("noble")
-		# 注意：这里只更新 cooldown，真正消耗资源仍由 execute_skill() 控制
-
-	# ✅ UI立刻刷新，让按钮变灰
-	update_ui()
+		p1.cooldown[skill_id] = -1  # 特别标记
+	elif skill_id == "noble" and p1.noble_resource >= 5:
+		p1.cooldown["noble"] = -1
+	# ⚠️ 这一步很关键：立刻更新UI
+	ui.update_skill_buttons(p1)
+	ui.update_noble_button(p1)
 	start_next_turn()
 
 func on_p2_action():
@@ -81,6 +81,10 @@ func start_next_turn():
 	msg = ""
 	p1.prepare_for_turn()
 	p2.prepare_for_turn()
+	
+	ui.update_skill_buttons(p1)
+	ui.update_noble_button(p1)
+	
 	on_p2_action()
 	
 	var order = ActionOrderResolver.determine_order(p1, p2)
@@ -135,20 +139,14 @@ func start_next_turn():
 				ui.wait_for_input(p1)
 			return
 		
-func handle_clash(attacker_p1: Character, attacker_p2: Character, skill1: String, skill2: String) -> String:
+func handle_clash(attacker_p1: Character, attacker_p2: Character, p1action: String, p2action: String) -> String:
 	var clash_msg := "⚡ 相打触发！双方同时行动\n"
 
-	var r1 = execute_skill(attacker_p1, attacker_p2, skill1)
+	var r1 = execute_skill(attacker_p1, attacker_p2, p1action)
 	clash_msg += r1 + "\n"
 	
-	winner = check_defeat()
-	if winner != "":
-		clash_msg += r1
-		end_battle(winner, clash_msg)
-		return clash_msg
-	
-	var r2 = execute_skill(attacker_p2, attacker_p1, skill2)
-	clash_msg += r2
+	var r2 = execute_skill(attacker_p2, attacker_p1, p2action)
+	clash_msg += r2 + "\n"
 	
 	winner = check_defeat()
 	if winner != "":
@@ -174,25 +172,32 @@ func update_hp_labels():
 	
 func execute_skill(user: Character, target: Character, skill_id: String) -> String:
 	var result_info := ""
-
+	var current_cd = user.cooldown.get(skill_id, 0)
 	# 技能类型描述
 	match skill_id:
 		"attack":
 			result_info += "→ %s 使用了 普通攻击\n" % user.char_name
+			
 		"noble":
-			if user.noble_resource < 3:
+			if user.noble_resource < NOBLE_REQUIRED_RESOURCE:
 				return "⚠️ 宝具资源不足，无法释放！\n"
+			if current_cd > 0:
+				return "⚠️ 宝具仍在冷却中，无法释放！\n"
+			elif current_cd == -1:
+				user.cooldown["noble"] = user.get_skill_cooldown("noble")
 			user.noble_resource = 0
 			result_info += "→ %s 使用了 宝具\n" % user.char_name
+			
 		_:
 			result_info += "→ %s 使用了技能：%s\n" % [user.char_name, skill_id]
 
 	# 技能冷却判断与设置
 	if skill_id.begins_with("skill_"):
-		if user.cooldown.has(skill_id) and user.cooldown[skill_id] > 0:
+		if current_cd > 0:
 			result_info += "⚠️ 技能 %s 仍在冷却中，无法使用！\n" % skill_id
 			return result_info
-		else:
+		# 如果为 -1，代表这是本轮准备释放的技能，现在正式设定冷却
+		if current_cd == -1:
 			user.cooldown[skill_id] = user.get_skill_cooldown(skill_id)
 
 	# 命中判定
@@ -262,7 +267,7 @@ func apply_skill_costs(user: Character, skill_id: String):
 		if user.cooldown.has(skill_id) and user.cooldown[skill_id] == 0:
 			user.cooldown[skill_id] = user.get_skill_cooldown(skill_id)
 	elif skill_id == "noble":
-		if user.noble_resource >= 3:
+		if user.noble_resource >= 5:
 			user.cooldown["noble"] = user.get_skill_cooldown("noble")
 			user.noble_resource = 0
 			
@@ -280,9 +285,18 @@ func end_battle(result_winner, result_msg):
 		result_msg += "\n战斗结果：平局！"
 	else:
 		result_msg += "\n战斗结果：%s 获胜！" % result_winner
-	ui.set_all_skill_buttons_enabled(false)
-	ui.show_message(result_msg)
+	
+	# 🧹 清理 -1 冷却值（准备释放但没能执行的技能）
+	for skill in p1.cooldown.keys():
+		if p1.cooldown[skill] == -1:
+			p1.cooldown[skill] = 0
+	for skill in p2.cooldown.keys():
+		if p2.cooldown[skill] == -1:
+			p2.cooldown[skill] = 0
+	
 	update_ui()
+	ui.lock_inputs()
+	ui.show_message(result_msg)
 	
 func reset_battle():
 	p1 = CharacterFactory.create_p1()
@@ -319,7 +333,7 @@ func _on_skill_pressed(skill_id: String):
 	on_player_skill_selected(skill_id)
 
 	# 判断宝具资源是否足够
-	if skill_id == "noble" and p1.noble_resource < 3:
+	if skill_id == "noble" and p1.noble_resource < 5:
 		#print("❌ 宝具资源不足，无法释放")
 		return  # 不执行回合，玩家可重新选择技能
 
