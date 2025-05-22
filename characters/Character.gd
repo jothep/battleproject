@@ -14,7 +14,14 @@ var cooldown = {
 	"skill_3": 0,
 	"noble": 0,
 }
-const SKILL_BASE_COOLDOWN = {"skill_1": 2, "skill_2": 3, "skill_3": 4, "noble": 0}
+const SKILL_NAME_MAP = {
+	"attack": "普通攻击",
+	"skill_1": "音速指",
+	"skill_2": "钛刃",
+	"skill_3": "雷鸣肘",
+	"noble": "超限释放：火星武神式"
+}
+const SKILL_BASE_COOLDOWN = {"skill_1": 3, "skill_2": 3, "skill_3": 4, "noble": 0}
 const NOBLE_REQUIRED_RESOURCE = 5
 
 var rng := RandomNumberGenerator.new()

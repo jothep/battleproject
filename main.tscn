@@ -16,10 +16,11 @@ script = ExtResource("2_h2yge")
 
 [node name="MessageLabel" type="Label" parent="Control"]
 layout_mode = 0
-offset_left = 48.0
-offset_top = 345.0
-offset_right = 228.0
-offset_bottom = 397.0
+offset_left = 46.0
+offset_top = 313.0
+offset_right = 226.0
+offset_bottom = 365.0
+theme_override_font_sizes/font_size = 28
 text = "战斗開始！"
 
 [node name="P1Label" type="Label" parent="Control"]
@@ -45,6 +46,7 @@ offset_left = 50.0
 offset_top = 130.0
 offset_right = 90.0
 offset_bottom = 161.0
+theme_override_font_sizes/font_size = 30
 text = "†東亞重工 攻击！"
 
 [node name="BattleManager" type="Node" parent="Control"]
@@ -68,45 +70,55 @@ text = "P2 Info"
 
 [node name="RestartButton" type="Button" parent="Control"]
 layout_mode = 0
-offset_left = 389.0
-offset_top = 132.0
-offset_right = 479.0
-offset_bottom = 192.0
+offset_left = 420.0
+offset_top = 130.0
+offset_right = 514.0
+offset_bottom = 180.0
+theme_override_font_sizes/font_size = 30
 text = "重開"
 
 [node name="Skill1Button" type="Button" parent="Control"]
 layout_mode = 1
 anchors_preset = -1
-offset_left = 47.0
-offset_top = 209.0
-offset_right = 186.0
-offset_bottom = 261.0
-theme_override_font_sizes/font_size = 20
-text = "Skill1"
+offset_left = 49.0
+offset_top = 190.0
+offset_right = 204.0
+offset_bottom = 242.0
+theme_override_font_sizes/font_size = 25
+text = "音速指"
 
 [node name="Skill2Button" type="Button" parent="Control"]
 layout_mode = 1
 anchors_preset = -1
-offset_left = 192.0
-offset_top = 210.0
-offset_right = 331.0
-offset_bottom = 262.0
-theme_override_font_sizes/font_size = 20
-text = "Skill2"
+offset_left = 210.0
+offset_top = 191.0
+offset_right = 361.0
+offset_bottom = 243.0
+theme_override_font_sizes/font_size = 25
+text = "钛刃"
 
 [node name="Skill3Button" type="Button" parent="Control"]
 layout_mode = 0
-offset_left = 337.0
-offset_top = 210.0
-offset_right = 476.0
-offset_bottom = 262.0
-theme_override_font_sizes/font_size = 20
-text = "Skill3"
+offset_left = 366.0
+offset_top = 190.0
+offset_right = 519.0
+offset_bottom = 242.0
+theme_override_font_sizes/font_size = 25
+text = "雷鸣肘"
 
 [node name="NobleButton" type="Button" parent="Control"]
 layout_mode = 0
-offset_left = 49.0
-offset_top = 275.0
-offset_right = 480.0
-offset_bottom = 320.0
-text = "宝具"
+offset_left = 43.0
+offset_top = 250.0
+offset_right = 525.0
+offset_bottom = 301.0
+theme_override_font_sizes/font_size = 30
+text = "超限释放：火星武神式"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Control"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Control/ScrollContainer"]
+layout_mode = 2

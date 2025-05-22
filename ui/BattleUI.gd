@@ -84,16 +84,16 @@ func update_noble_button(character: Character):
 
 	if cd > 0:
 		noble_button.disabled = true
-		noble_button.text = "宝具 CD:%d" % cd
+		noble_button.text = "超限释放：火星武神式 CD:%d" % cd
 	elif cd == -1:
 		noble_button.disabled = true
-		noble_button.text = "宝具 激发" 
+		noble_button.text = "超限释放：火星武神式" 
 	elif character.noble_resource < NOBLE_REQUIRED_RESOURCE:
 		noble_button.disabled = true
-		noble_button.text = "宝具 (%d/%d)" % [character.noble_resource,NOBLE_REQUIRED_RESOURCE]
+		noble_button.text = "超限释放：火星武神式 (%d/%d)" % [character.noble_resource,NOBLE_REQUIRED_RESOURCE]
 	else:
 		noble_button.disabled = false
-		noble_button.text = "宝具"
+		noble_button.text = "超限释放：火星武神式"
 
 func set_all_skill_buttons_enabled(enabled: bool):
 	if attack_button == null:
@@ -131,37 +131,37 @@ func update_skill_buttons(character: Character):
 	var cd1 = cd.get("skill_1", 0)
 	skill1_button.disabled = cd1 != 0
 	if cd1 >0:
-		skill1_button.text = "技能1 (CD: %d)" % cd1 
+		skill1_button.text = "音速指 (%d)" % cd1 
 	elif cd1 == -1:
-		skill1_button.text = "技能1 (CD: %d)" % cd1
+		skill1_button.text = "音速指 (%d)" % cd1
 	else:
-		skill1_button.text = "技能1"
+		skill1_button.text = "音速指"
 	
 	var cd2 = cd.get("skill_2", 0)
 	skill2_button.disabled = cd2 != 0
 	if cd2 >0:
-		skill2_button.text = "技能2 (CD: %d)" % cd2 
+		skill2_button.text = "钛刃 (%d)" % cd2 
 	elif cd2 == -1:
-		skill2_button.text = "技能2 (CD: %d)" % cd2
+		skill2_button.text = "钛刃 (%d)" % cd2
 	else:
-		skill2_button.text = "技能2"
+		skill2_button.text = "钛刃"
 
 	var cd3 = cd.get("skill_3", 0)
 	skill3_button.disabled = cd3 != 0
 	if cd3 >0:
-		skill3_button.text = "技能3 (CD: %d)" % cd3
+		skill3_button.text = "雷鸣肘 (%d)" % cd3
 	elif cd3 == -1:
-		skill3_button.text = "技能3 (CD: %d)" % cd3
+		skill3_button.text = "雷鸣肘 (%d)" % cd3
 	else:
-		skill3_button.text = "技能3"
+		skill3_button.text = "雷鸣肘"
 
 	# 宝具（考虑资源限制）
 	var cd_noble = cd.get("noble", 0)
-	noble_button.text = "宝具 (CD: %d)" % cd_noble if cd_noble > 0 else "宝具"
+	noble_button.text = "超限释放：火星武神式 (%d)" % cd_noble if cd_noble > 0 else "超限释放：火星武神式"
 	noble_button.disabled = cd_noble > 0 or character.noble_resource < 3
 
 	# 攻击永远可用（除非你在 end_battle 中统一禁用）
-	attack_button.text = "攻击"
+	attack_button.text = "†東亞重工 攻击！"
 
 func lock_inputs():
 	attack_button.disabled = true

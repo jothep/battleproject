@@ -102,7 +102,7 @@ func start_next_turn():
 			return
 
 		"p1_first":
-			msg += "p1 first!\n"
+			msg += "p1 抢先出手！\n"
 			msg += execute_skill(p1, p2, p1_action)
 			update_ui()
 			winner = check_defeat()
@@ -121,7 +121,7 @@ func start_next_turn():
 			return
 
 		"p2_first":
-			msg += "p2 first!\n"
+			msg += "p2 抢先出手！\n"
 			msg += execute_skill(p2, p1, p2_action)
 			update_ui()
 			winner = check_defeat()
@@ -140,13 +140,13 @@ func start_next_turn():
 			return
 		
 func handle_clash(attacker_p1: Character, attacker_p2: Character, p1action: String, p2action: String) -> String:
-	var clash_msg := "⚡ 相打触发！双方同时行动\n"
+	var clash_msg := "⚡ 两人同时出招！\n"
 
 	var r1 = execute_skill(attacker_p1, attacker_p2, p1action)
-	clash_msg += r1 + "\n"
+	clash_msg += r1
 	
 	var r2 = execute_skill(attacker_p2, attacker_p1, p2action)
-	clash_msg += r2 + "\n"
+	clash_msg += r2
 	
 	winner = check_defeat()
 	if winner != "":
@@ -171,12 +171,15 @@ func update_hp_labels():
 	print("P1 HP: %d, P2 HP: %d" % [p1_hp, p2_hp])
 	
 func execute_skill(user: Character, target: Character, skill_id: String) -> String:
+	var c_user := user as Character
+	print("SCRIPT PATH:", user.get_script().resource_path)
+	var skill_name = c_user.SKILL_NAME_MAP.get(skill_id, skill_id)
 	var result_info := ""
 	var current_cd = user.cooldown.get(skill_id, 0)
 	# 技能类型描述
 	match skill_id:
 		"attack":
-			result_info += "→ %s 使用了 普通攻击\n" % user.char_name
+			result_info += "→ %s 进行普通攻击\n" % user.char_name
 			
 		"noble":
 			if user.noble_resource < NOBLE_REQUIRED_RESOURCE:
@@ -186,10 +189,11 @@ func execute_skill(user: Character, target: Character, skill_id: String) -> Stri
 			elif current_cd == -1:
 				user.cooldown["noble"] = user.get_skill_cooldown("noble")
 			user.noble_resource = 0
-			result_info += "→ %s 使用了 宝具\n" % user.char_name
+			result_info += "→ %s 使用了超限释放：火星武神式\n" % user.char_name
 			
 		_:
-			result_info += "→ %s 使用了技能：%s\n" % [user.char_name, skill_id]
+			#result_info += "→ %s 使用了技能：%s\n" % [user.char_name, skill_id]
+			result_info += "→ %s 使用了技能：%s\n" % [c_user.char_name, skill_name]
 
 	# 技能冷却判断与设置
 	if skill_id.begins_with("skill_"):
@@ -207,17 +211,18 @@ func execute_skill(user: Character, target: Character, skill_id: String) -> Stri
 		"miss":
 			result_info += "未命中！%s 闪避了攻击。\n" % target.char_name
 			return result_info
-		"graze":
-			result_info += "擦伤命中！%s 受到轻微伤害。" % target.char_name
-		"normal":
-			result_info += "命中！%s 受到伤害。" % target.char_name
-		"critical":
-			result_info += "暴击！%s 遭受重创！" % target.char_name
-
+			
 	# 计算伤害并扣除
 	var dmg = calculate_damage(user, target, skill_id, hit_level)
 	target.hp -= dmg
-	result_info += " 造成 %d 点伤害。\n" % dmg
+	
+	match hit_level:		
+		"graze":
+			result_info += "擦伤命中，%s 仅受轻微伤害（%d 点）。\n" % [target.char_name, dmg]
+		"normal":
+			result_info += "命中！%s 受到伤害（%d 点）。\n" % [target.char_name, dmg]
+		"critical":
+			result_info += "暴击！%s 遭受重创（%d 点伤害）！\n" % [target.char_name, dmg]
 
 	return result_info
 	
@@ -282,9 +287,9 @@ func check_defeat() -> String:
 	
 func end_battle(result_winner, result_msg):
 	if result_winner == "Draw":
-		result_msg += "\n战斗结果：平局！"
+		result_msg += "战斗结果：平局！"
 	else:
-		result_msg += "\n战斗结果：%s 获胜！" % result_winner
+		result_msg += "战斗结果：%s 获胜！" % result_winner
 	
 	# 🧹 清理 -1 冷却值（准备释放但没能执行的技能）
 	for skill in p1.cooldown.keys():
@@ -339,51 +344,6 @@ func _on_skill_pressed(skill_id: String):
 
 	p1_action = skill_id
 	start_next_turn()
-
-func _on_attack_pressed():
-	var pair = choose_attacker()
-	var first = pair[0]
-	var second = pair[1]
-	
-	if p1_hp <= 0 or p2_hp <= 0:
-		return
-
-	if randf() < 0.2:
-		msg = "相互击中！两人的攻击同时命中！"
-		var p1_damage = perform_attack(p1, p2)
-		var p2_damage = perform_attack(p2, p1)
-		msg += "\n%s 对 %s 造成 %d 点伤害。" % [first.char_name, second.char_name, p1_damage]
-		msg += "\n%s 对 %s 造成 %d 点伤害。" % [second.char_name, first.char_name, p2_damage]
-		ui.msg_label.text = msg
-		update_ui()
-		await get_tree().create_timer(1).timeout
-		winner = check_defeat()
-		if winner != "":
-			end_battle(winner, msg)
-		return
-
-	msg = "%s 先手攻击！" % first.char_name
-	var dmg = perform_attack(first, second)
-	msg += "\n%s 对 %s 造成 %d 点伤害。" % [first.char_name, second.char_name, dmg]
-	update_ui()
-	await get_tree().create_timer(1).timeout
-
-	winner = check_defeat()
-	if winner != "":
-		end_battle(winner, msg)
-		return
-
-	dmg = perform_attack(second, first)
-	msg += "\n%s 反击！" % second.char_name
-	msg += "\n%s 对 %s 造成 %d 点伤害。" % [second.char_name,first.char_name, dmg]
-
-	winner = check_defeat()
-	if winner != "":
-		end_battle(winner, msg)
-		return
-
-	ui.show_message(msg)
-	update_ui()
 		
 func choose_attacker() -> Array:
 	var s1 = p1.attributes.get_agility()
