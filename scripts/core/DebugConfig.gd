@@ -21,6 +21,7 @@ var module_enabled = {
 	"battle": true,              # 战斗流程
 	"ui": false,                 # UI 更新
 	"skill": false,              # 技能执行
+	"exploration": true,         # 探索系统
 }
 
 ## 检查是否应该输出日志
