@@ -29,7 +29,7 @@ static func load_all_from_directory(dir_path: String) -> Array[Dictionary]:
 
 	dir.list_dir_end()
 
-	print("从目录 %s 加载了 %d 个 JSON 文件" % [dir_path, results.size()])
+	DebugConfig.log_debug("从目录 %s 加载了 %d 个 JSON 文件" % [dir_path, results.size()], "resource_manager")
 	return results
 
 ## 加载单个 JSON 文件并返回字典

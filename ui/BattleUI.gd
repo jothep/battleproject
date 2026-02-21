@@ -32,10 +32,10 @@ func _ready():
 		"MessageLabel", "P1Label", "P2Label", "P1InfoLabel", "P2InfoLabel"
 	]:
 		if get_node_or_null(node_name) == null:
-			print("❌ UI节点未找到：", name)
+			DebugConfig.log_error("❌ UI节点未找到：" + node_name, "ui")
 			all_ok = false
 		else:
-			print("✅ UI节点已找到：", name)
+			DebugConfig.log_verbose("✅ UI节点已找到：" + node_name, "ui")
 
 	if not all_ok:
 		push_error("❗BattleUI 初始化失败：有控件未正确绑定！")
@@ -55,7 +55,7 @@ func _ready():
 	if noble_button: noble_button.pressed.connect(_on_noble_pressed)
 	if restart_button: restart_button.pressed.connect(_on_restart_pressed)
 
-	print("✅ BattleUI 初始化完成")
+	DebugConfig.log_info("✅ BattleUI 初始化完成", "ui")
 
 func _on_attack_pressed():
 	battle_manager.on_player_skill_selected("attack")
@@ -119,7 +119,7 @@ func wait_for_input(character: Character):
 	update_skill_buttons(character)
 	update_noble_button(character)
 	attack_button.disabled = false
-	print("🎮 等待玩家操作...")
+	DebugConfig.log_debug("🎮 等待玩家操作...", "ui")
 
 static func get_character_info(c: Character) -> String:
 	var text = "【%s】\nMAX_HP: %d\nATK: %d\n" % [c.char_name, c.max_hp, c.atk]

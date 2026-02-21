@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+DebugConfig="*res://scripts/core/DebugConfig.gd"
 ResourceManager="*res://scripts/core/ResourceManager.gd"
 
 [display]

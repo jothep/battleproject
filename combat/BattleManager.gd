@@ -168,7 +168,7 @@ func update_hp_labels():
 	p1_hp = p1.hp
 	p2_hp = p2.hp
 	ui.set_all_skill_buttons_enabled(false)
-	print("P1 HP: %d, P2 HP: %d" % [p1_hp, p2_hp])
+	DebugConfig.log_debug("P1 HP: %d, P2 HP: %d" % [p1_hp, p2_hp], "battle")
 	
 func execute_skill(user: Character, target: Character, skill_id: String) -> String:
 	var result_info := ""

@@ -43,7 +43,7 @@ static func create_from_data(character_id: String) -> Character:
 	c.calculate_combat_stats()
 	c.initialize()
 
-	print("创建角色: %s (%s)" % [c.char_name, character_id])
+	DebugConfig.log_debug("创建角色: %s (%s)" % [c.char_name, character_id], "character")
 	return c
 
 ## 创建 P1（使用配置文件）
