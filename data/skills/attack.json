@@ -1,0 +1,11 @@
+{
+  "skill_id": "attack",
+  "skill_name": "†東亞重工 攻击！",
+  "skill_type": "attack",
+  "damage_multiplier": 1.0,
+  "cooldown": 0,
+  "description": "基础物理攻击",
+  "animation": "",
+  "requires_resource": false,
+  "required_resource_amount": 0
+}

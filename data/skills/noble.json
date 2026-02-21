@@ -1,0 +1,11 @@
+{
+  "skill_id": "noble",
+  "skill_name": "超限释放：火星武神式",
+  "skill_type": "noble",
+  "damage_multiplier": 3.0,
+  "cooldown": 0,
+  "description": "东亚重工的最强必杀技",
+  "animation": "mars_ares_mode",
+  "requires_resource": true,
+  "required_resource_amount": 5
+}

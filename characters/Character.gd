@@ -7,21 +7,11 @@ var max_hp := 0
 var hp: int
 var atk := 0
 var noble_resource: int = 0
-var cooldown = {
-	"attack": 0,
-	"skill_1": 0,
-	"skill_2": 0,
-	"skill_3": 0,
-	"noble": 0,
-}
-const SKILL_NAME_MAP = {
-	"attack": "普通攻击",
-	"skill_1": "音速指",
-	"skill_2": "钛刃",
-	"skill_3": "雷鸣肘",
-	"noble": "超限释放：火星武神式"
-}
-const SKILL_BASE_COOLDOWN = {"skill_1": 3, "skill_2": 3, "skill_3": 4, "noble": 0}
+
+# 技能系统（使用 SkillData）
+var skill_ids: Array[String] = []  # 角色拥有的技能ID列表
+var cooldown: Dictionary = {}       # skill_id -> 当前冷却时间
+
 const NOBLE_REQUIRED_RESOURCE = 5
 
 var rng := RandomNumberGenerator.new()
@@ -52,22 +42,23 @@ func reset_for_battle():
 func get_random_available_skill() -> String:
 	var available_skills = []
 
-	# 攻击永远可用
-	available_skills.append("attack")
+	# 遍历角色的所有技能
+	for skill_id in skill_ids:
+		var skill_data = ResourceManager.get_skill(skill_id)
+		if not skill_data:
+			continue
 
-	# 只有冷却为0的技能才可选
-	for skill_id in ["skill_1", "skill_2", "skill_3"]:
-		if cooldown.get(skill_id, 0) <= 0:
+		# 检查技能是否可用
+		if is_skill_available(skill_id):
 			available_skills.append(skill_id)
-
-	# 宝具：冷却为0 且 能量达到5
-	if cooldown.get("noble", 0) <= 0 and noble_resource >= 5:
-		available_skills.append("noble")
 
 	# 使用随机数生成器安全获取技能
 	if available_skills.size() > 0:
 		return available_skills[rng.randi_range(0, available_skills.size() - 1)]
 	else:
+		# 如果没有可用技能，返回第一个技能（通常是 attack）
+		if skill_ids.size() > 0:
+			return skill_ids[0]
 		return "attack"
 
 func prepare_for_turn():
@@ -78,6 +69,39 @@ func prepare_for_turn():
 		noble_resource += 1
 
 func get_skill_cooldown(skill_id: String) -> int:
-	if skill_id == "attack":
-		return 0
-	return SKILL_BASE_COOLDOWN.get(skill_id, 0)
+	var skill_data = ResourceManager.get_skill(skill_id)
+	if skill_data:
+		return skill_data.cooldown
+	return 0
+
+## 获取技能名称
+func get_skill_name(skill_id: String) -> String:
+	var skill_data = ResourceManager.get_skill(skill_id)
+	if skill_data:
+		return skill_data.skill_name
+	return skill_id
+
+## 检查技能是否可用
+func is_skill_available(skill_id: String) -> bool:
+	var skill_data = ResourceManager.get_skill(skill_id)
+	if not skill_data:
+		return false
+
+	# 检查冷却时间
+	var cd = cooldown.get(skill_id, 0)
+	if cd > 0:
+		return false
+
+	# 检查宝具资源需求
+	if skill_data.requires_resource:
+		if noble_resource < skill_data.required_resource_amount:
+			return false
+
+	return true
+
+## 初始化技能冷却字典
+func initialize_skills(skill_id_list: Array[String]):
+	skill_ids = skill_id_list.duplicate()
+	cooldown.clear()
+	for skill_id in skill_ids:
+		cooldown[skill_id] = 0

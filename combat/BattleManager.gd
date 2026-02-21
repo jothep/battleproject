@@ -171,38 +171,37 @@ func update_hp_labels():
 	print("P1 HP: %d, P2 HP: %d" % [p1_hp, p2_hp])
 	
 func execute_skill(user: Character, target: Character, skill_id: String) -> String:
-	var c_user := user as Character
-	print("SCRIPT PATH:", user.get_script().resource_path)
-	var skill_name = c_user.SKILL_NAME_MAP.get(skill_id, skill_id)
 	var result_info := ""
 	var current_cd = user.cooldown.get(skill_id, 0)
+
+	# 获取技能数据
+	var skill_data = ResourceManager.get_skill(skill_id)
+	if not skill_data:
+		return "⚠️ 技能数据不存在: %s\n" % skill_id
+
 	# 技能类型描述
-	match skill_id:
-		"attack":
-			result_info += "→ %s 进行普通攻击\n" % user.char_name
-			
-		"noble":
-			if user.noble_resource < NOBLE_REQUIRED_RESOURCE:
-				return "⚠️ 宝具资源不足，无法释放！\n"
-			if current_cd > 0:
-				return "⚠️ 宝具仍在冷却中，无法释放！\n"
-			elif current_cd == -1:
-				user.cooldown["noble"] = user.get_skill_cooldown("noble")
-			user.noble_resource = 0
-			result_info += "→ %s 使用了超限释放：火星武神式\n" % user.char_name
-			
-		_:
-			#result_info += "→ %s 使用了技能：%s\n" % [user.char_name, skill_id]
-			result_info += "→ %s 使用了技能：%s\n" % [c_user.char_name, skill_name]
+	if skill_data.skill_type == "attack":
+		result_info += "→ %s 进行%s\n" % [user.char_name, skill_data.skill_name]
+	elif skill_data.skill_type == "noble":
+		if user.noble_resource < NOBLE_REQUIRED_RESOURCE:
+			return "⚠️ 宝具资源不足，无法释放！\n"
+		if current_cd > 0:
+			return "⚠️ 宝具仍在冷却中，无法释放！\n"
+		elif current_cd == -1:
+			user.cooldown[skill_id] = skill_data.cooldown
+		user.noble_resource = 0
+		result_info += "→ %s 使用了%s\n" % [user.char_name, skill_data.skill_name]
+	else:
+		result_info += "→ %s 使用了技能：%s\n" % [user.char_name, skill_data.skill_name]
 
 	# 技能冷却判断与设置
-	if skill_id.begins_with("skill_"):
+	if skill_data.skill_type == "skill":
 		if current_cd > 0:
-			result_info += "⚠️ 技能 %s 仍在冷却中，无法使用！\n" % skill_id
+			result_info += "⚠️ 技能 %s 仍在冷却中，无法使用！\n" % skill_data.skill_name
 			return result_info
 		# 如果为 -1，代表这是本轮准备释放的技能，现在正式设定冷却
 		if current_cd == -1:
-			user.cooldown[skill_id] = user.get_skill_cooldown(skill_id)
+			user.cooldown[skill_id] = skill_data.cooldown
 
 	# 命中判定
 	var hit_level = judge_hit_level(user, target)
@@ -231,21 +230,14 @@ func calculate_damage(user: Character, _target: Character, skill_id: String, hit
 	if hit_type == "miss":
 		return 0
 
-	# 技能伤害倍率
+	# 从配置获取技能伤害倍率
 	var skill_multiplier := 1.0
-	match skill_id:
-		"attack":
-			skill_multiplier = 1.0
-		"skill_1":
-			skill_multiplier = 1.2
-		"skill_2":
-			skill_multiplier = 1.5
-		"skill_3":
-			skill_multiplier = 1.7
-		"noble":
-			skill_multiplier = 3.0
-		_:
-			skill_multiplier = 1.0
+	var skill_data = ResourceManager.get_skill(skill_id)
+	if skill_data:
+		skill_multiplier = skill_data.damage_multiplier
+	else:
+		push_error("技能不存在: " + skill_id)
+		skill_multiplier = 1.0
 
 	# 命中结果倍率
 	var hit_multiplier := 1.0

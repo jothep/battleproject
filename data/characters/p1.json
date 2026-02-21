@@ -1,0 +1,22 @@
+{
+  "character_id": "p1",
+  "character_name": "艾露比",
+  "description": "来自东亚重工的战士 - 平衡型格斗家",
+  "portrait_path": "",
+  "battle_sprite_path": "",
+  "attributes": {
+    "strength": "A",
+    "agility": "B",
+    "luck": "C",
+    "endurance": "B",
+    "mana": "A-",
+    "noble": "A"
+  },
+  "skill_ids": [
+    "attack",
+    "skill_1",
+    "skill_2",
+    "skill_3"
+  ],
+  "noble_phantasm_id": "noble"
+}

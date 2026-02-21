@@ -1,0 +1,11 @@
+{
+  "skill_id": "skill_1",
+  "skill_name": "音速指",
+  "skill_type": "skill",
+  "damage_multiplier": 1.2,
+  "cooldown": 3,
+  "description": "以超音速刺出的指技",
+  "animation": "sonic_finger",
+  "requires_resource": false,
+  "required_resource_amount": 0
+}

@@ -81,19 +81,25 @@ func update_hp_labels():
 
 func update_noble_button(character: Character):
 	var cd = character.cooldown.get("noble", 0)
+	var noble_skill_data = ResourceManager.get_skill("noble")
+
+	if not noble_skill_data:
+		noble_button.disabled = true
+		noble_button.text = "未配置"
+		return
 
 	if cd > 0:
 		noble_button.disabled = true
-		noble_button.text = "超限释放：火星武神式 CD:%d" % cd
+		noble_button.text = "%s CD:%d" % [noble_skill_data.skill_name, cd]
 	elif cd == -1:
 		noble_button.disabled = true
-		noble_button.text = "超限释放：火星武神式" 
+		noble_button.text = noble_skill_data.skill_name
 	elif character.noble_resource < NOBLE_REQUIRED_RESOURCE:
 		noble_button.disabled = true
-		noble_button.text = "超限释放：火星武神式 (%d/%d)" % [character.noble_resource,NOBLE_REQUIRED_RESOURCE]
+		noble_button.text = "%s (%d/%d)" % [noble_skill_data.skill_name, character.noble_resource, NOBLE_REQUIRED_RESOURCE]
 	else:
 		noble_button.disabled = false
-		noble_button.text = "超限释放：火星武神式"
+		noble_button.text = noble_skill_data.skill_name
 
 func set_all_skill_buttons_enabled(enabled: bool):
 	if attack_button == null:
@@ -128,40 +134,39 @@ static func get_character_info(c: Character) -> String:
 func update_skill_buttons(character: Character):
 	var cd = character.cooldown
 
-	var cd1 = cd.get("skill_1", 0)
-	skill1_button.disabled = cd1 != 0
-	if cd1 >0:
-		skill1_button.text = "音速指 (%d)" % cd1 
-	elif cd1 == -1:
-		skill1_button.text = "音速指 (%d)" % cd1
-	else:
-		skill1_button.text = "音速指"
-	
-	var cd2 = cd.get("skill_2", 0)
-	skill2_button.disabled = cd2 != 0
-	if cd2 >0:
-		skill2_button.text = "钛刃 (%d)" % cd2 
-	elif cd2 == -1:
-		skill2_button.text = "钛刃 (%d)" % cd2
-	else:
-		skill2_button.text = "钛刃"
+	# 动态更新技能按钮（假设技能按钮对应 skill_1, skill_2, skill_3）
+	var skill_buttons = [skill1_button, skill2_button, skill3_button]
+	var skill_ids = ["skill_1", "skill_2", "skill_3"]
 
-	var cd3 = cd.get("skill_3", 0)
-	skill3_button.disabled = cd3 != 0
-	if cd3 >0:
-		skill3_button.text = "雷鸣肘 (%d)" % cd3
-	elif cd3 == -1:
-		skill3_button.text = "雷鸣肘 (%d)" % cd3
-	else:
-		skill3_button.text = "雷鸣肘"
+	for i in range(3):
+		var skill_id = skill_ids[i]
+		var button = skill_buttons[i]
+		var skill_data = ResourceManager.get_skill(skill_id)
+
+		if skill_data:
+			var cd_value = cd.get(skill_id, 0)
+			button.disabled = cd_value != 0
+			button.text = skill_data.get_display_name_with_cd(cd_value)
+		else:
+			button.disabled = true
+			button.text = "未配置"
 
 	# 宝具（考虑资源限制）
-	var cd_noble = cd.get("noble", 0)
-	noble_button.text = "超限释放：火星武神式 (%d)" % cd_noble if cd_noble > 0 else "超限释放：火星武神式"
-	noble_button.disabled = cd_noble > 0 or character.noble_resource < 3
+	var noble_skill_data = ResourceManager.get_skill("noble")
+	if noble_skill_data:
+		var cd_noble = cd.get("noble", 0)
+		noble_button.text = noble_skill_data.get_display_name_with_cd(cd_noble)
+		noble_button.disabled = cd_noble > 0 or character.noble_resource < 5
+	else:
+		noble_button.disabled = true
+		noble_button.text = "未配置"
 
-	# 攻击永远可用（除非你在 end_battle 中统一禁用）
-	attack_button.text = "†東亞重工 攻击！"
+	# 攻击按钮
+	var attack_skill_data = ResourceManager.get_skill("attack")
+	if attack_skill_data:
+		attack_button.text = attack_skill_data.skill_name
+	else:
+		attack_button.text = "攻击"
 
 func lock_inputs():
 	attack_button.disabled = true

@@ -1,0 +1,11 @@
+{
+  "skill_id": "skill_3",
+  "skill_name": "雷鸣肘",
+  "skill_type": "skill",
+  "damage_multiplier": 1.7,
+  "cooldown": 4,
+  "description": "带有雷电能量的肘击",
+  "animation": "thunder_elbow",
+  "requires_resource": false,
+  "required_resource_amount": 0
+}

@@ -1,0 +1,11 @@
+{
+  "skill_id": "skill_2",
+  "skill_name": "钛刃",
+  "skill_type": "skill",
+  "damage_multiplier": 1.5,
+  "cooldown": 3,
+  "description": "用钛合金刀刃进行的强力斩击",
+  "animation": "titan_blade",
+  "requires_resource": false,
+  "required_resource_amount": 0
+}

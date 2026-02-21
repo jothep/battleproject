@@ -1,0 +1,22 @@
+{
+  "character_id": "p2",
+  "character_name": "米哈伊尔",
+  "description": "来自东方的神秘战士 - 魔力特化型",
+  "portrait_path": "",
+  "battle_sprite_path": "",
+  "attributes": {
+    "strength": "A-",
+    "agility": "B",
+    "luck": "C+",
+    "endurance": "B",
+    "mana": "B++",
+    "noble": "B"
+  },
+  "skill_ids": [
+    "attack",
+    "skill_1",
+    "skill_2",
+    "skill_3"
+  ],
+  "noble_phantasm_id": "noble"
+}
